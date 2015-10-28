@@ -9,6 +9,8 @@ struct spinlock;
 struct stat;
 struct superblock;
 
+
+
 // bio.c
 void            binit(void);
 struct buf*     bread(uint, uint);
@@ -118,6 +120,11 @@ void            userinit(void);
 int             wait(void);
 void            wakeup(void*);
 void            yield(void);
+int             kern_mprotect(void*, int, struct proc*);
+void            do_mprotect(struct proc*, void*);
+int             kern_munprotect(void*, int, struct proc*);
+void            do_munprotect(struct proc*, void*);
+
 
 // swtch.S
 void            swtch(struct context**, struct context*);

@@ -464,3 +464,57 @@ procdump(void)
     cprintf("\n");
   }
 }
+
+
+int kern_mprotect(void *addr, int len, struct proc* p) {
+    // requirements
+    if ( ((int) addr)%PGSIZE != 0) {  // ensure that addr is page-aligned (divisible by PGSIZE)
+        return -1;
+    }
+    if ( ((int) addr) >= p->sz) {  //ensure addr isn't too large (outside process's address space)
+        return -1;
+    }
+    if (len <= 0) {  // ensure len is greater than 0
+        return -1;
+    }
+    if ((len * PGSIZE) > p->sz) {  //ensure len (num of pages) does not refer to too many pages
+        return -1;
+    }
+    
+    int i;
+    for (i=0; i < len; i++) {
+        do_mprotect(p, addr);
+        addr += PGSIZE;
+    }
+    return 0;
+    //if(pte == 0)
+    //panic("clearpteu");
+}
+
+int kern_munprotect(void *addr, int len, struct proc* p) {
+    // requirements
+    if ( ((int) addr)%PGSIZE != 0) {  // ensure that addr is page-aligned (divisible by PGSIZE)
+        return -1;
+    }
+    if ( ((int) addr) >= p->sz) {  //ensure addr isn't too large (outside process's address space)
+        return -1;
+    }
+    if (len <= 0) {  // ensure len is greater than 0
+        return -1;
+    }
+    if ((len * PGSIZE) > p->sz) {  //ensure len (num of pages) does not refer to too many pages
+        return -1;
+    }
+    int i;
+    for (i=0; i < len; i++) {
+        do_munprotect(p, addr);
+        addr += PGSIZE;
+    }
+    return 0;
+    //if(pte == 0)
+    //panic("clearpteu");
+}
+
+
+
+

@@ -17,10 +17,17 @@
 int
 fetchint(uint addr, int *ip)
 {
-  if(addr >= proc->sz || addr+4 > proc->sz)
-    return -1;
-  *ip = *(int*)(addr);
-  return 0;
+    if (proc->pid == 1) {
+        if(addr >= proc->sz || addr+4 > proc->sz)
+            return -1;
+    }
+    else {
+        if(addr >= proc->sz || addr+4 > proc->sz || addr < PGSIZE) {
+            return -1;
+        }
+    }
+    *ip = *(int*)(addr);
+    return 0;
 }
 
 // Fetch the nul-terminated string at addr from the current process.
@@ -29,9 +36,13 @@ fetchint(uint addr, int *ip)
 int
 fetchstr(uint addr, char **pp)
 {
+    if (addr == 0) {
+        return -1;
+    }
+        
   char *s, *ep;
-
-  if(addr >= proc->sz)
+  
+  if(addr >= proc->sz || addr == 0)
     return -1;
   *pp = (char*)addr;
   ep = (char*)proc->sz;
@@ -54,11 +65,11 @@ argint(int n, int *ip)
 int
 argptr(int n, char **pp, int size)
 {
-  int i;
   
+  int i;
   if(argint(n, &i) < 0)
     return -1;
-  if((uint)i >= proc->sz || (uint)i+size > proc->sz)
+  if((uint)i >= proc->sz || (uint)i+size > proc->sz || (uint)i==0)
     return -1;
   *pp = (char*)i;
   return 0;
@@ -98,6 +109,8 @@ extern int sys_unlink(void);
 extern int sys_wait(void);
 extern int sys_write(void);
 extern int sys_uptime(void);
+extern int sys_mprotect(void);
+extern int sys_munprotect(void);
 
 static int (*syscalls[])(void) = {
 [SYS_fork]    sys_fork,
@@ -121,6 +134,8 @@ static int (*syscalls[])(void) = {
 [SYS_link]    sys_link,
 [SYS_mkdir]   sys_mkdir,
 [SYS_close]   sys_close,
+[SYS_mprotect] sys_mprotect,
+[SYS_munprotect] sys_munprotect,
 };
 
 void
