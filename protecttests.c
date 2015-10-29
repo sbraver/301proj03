@@ -30,8 +30,8 @@ main(int argc, char *argv[])
 
   // should fail for address zero, which shouldn't be mapped in
   // the process any more because of part a of project
-  //assert(mprotect(0, 1) == -1);
-  //assert(munprotect(0, 1) == -1);
+  assert(mprotect(0, 1) == -1);
+  assert(munprotect(0, 1) == -1);
 
   printf(1, "starting address is %d\n", (uint)start);
 

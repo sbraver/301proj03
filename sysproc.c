@@ -93,14 +93,18 @@ sys_uptime(void)
 
 int sys_mprotect(void) 
 {
+    
     void *addr;
     int len;
+    cprintf("sys addr: %d\n\n",addr); 
     if (argptr(0, (char **) &addr, 4) < 0) {
         return -1;
     }
     if (argint(1, &len) < 0) {
         return -1;
     }
+    cprintf("\n sys here\n\n");
+    
     return kern_mprotect(addr, len, proc);
 }
 

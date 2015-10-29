@@ -50,8 +50,10 @@ walkpgdir(pde_t *pgdir, const void *va, int alloc)
 
   pde = &pgdir[PDX(va)];
   if(*pde & PTE_P){
+    
     pgtab = (pte_t*)p2v(PTE_ADDR(*pde));
   } else {
+  
     if(!alloc || (pgtab = (pte_t*)kalloc()) == 0)
       return 0;
     // Make sure all those PTE_P bits are zero.
@@ -61,6 +63,7 @@ walkpgdir(pde_t *pgdir, const void *va, int alloc)
     // entries, if necessary.
     *pde = v2p(pgtab) | PTE_P | PTE_W | PTE_U;
   }
+  
   return &pgtab[PTX(va)];
 }
 
@@ -378,9 +381,13 @@ copyout(pde_t *pgdir, uint va, void *p, uint len)
 }
 
 void do_mprotect(struct proc* p, void * addr) {
+    cprintf("\n do addr: %d\n\n",addr); 
     pte_t *pte;
     pte = walkpgdir(p->pgdir, addr, 0);
+    cprintf("pte: %d\n\n",(int)pte);
+    cprintf("what pte points to before bitwise: %d\n\n",(int)*pte);
     *pte &= ~PTE_W;
+    cprintf("what pte points to after bitwise: %d\n\n",(int)*pte);
     lcr3(v2p(p->pgdir));
 }
 

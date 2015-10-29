@@ -468,6 +468,7 @@ procdump(void)
 
 int kern_mprotect(void *addr, int len, struct proc* p) {
     // requirements
+    cprintf("kern addr: %d\n\n",addr); 
     if ( ((int) addr)%PGSIZE != 0) {  // ensure that addr is page-aligned (divisible by PGSIZE)
         return -1;
     }
@@ -485,14 +486,25 @@ int kern_mprotect(void *addr, int len, struct proc* p) {
     for (i=0; i < len; i++) {
         do_mprotect(p, addr);
         addr += PGSIZE;
+    
+    }
+    
+    if((int)addr==(p->sz+PGSIZE)){
+        cprintf("here");
+        return -1;
     }
     return 0;
+    }
+    
     //if(pte == 0)
     //panic("clearpteu");
-}
+
+
+
 
 int kern_munprotect(void *addr, int len, struct proc* p) {
     // requirements
+    
     if ( ((int) addr)%PGSIZE != 0) {  // ensure that addr is page-aligned (divisible by PGSIZE)
         return -1;
     }
@@ -510,6 +522,11 @@ int kern_munprotect(void *addr, int len, struct proc* p) {
         do_munprotect(p, addr);
         addr += PGSIZE;
     }
+    if((int)addr==(p->sz+PGSIZE)){
+        cprintf("here");
+        return -1;
+     }
+    
     return 0;
     //if(pte == 0)
     //panic("clearpteu");

@@ -18,6 +18,7 @@ int
 fetchint(uint addr, int *ip)
 {
     if (proc->pid == 1) {
+       
         if(addr >= proc->sz || addr+4 > proc->sz)
             return -1;
     }
@@ -65,13 +66,16 @@ argint(int n, int *ip)
 int
 argptr(int n, char **pp, int size)
 {
-  
+ //cprintf("\naddr: %d\n\n",*pp); 
   int i;
+ //cprintf("\n2.addr: %d\n\n",*pp);
   if(argint(n, &i) < 0)
     return -1;
+ //cprintf("\n3. addr: %d\n\n",*pp);
   if((uint)i >= proc->sz || (uint)i+size > proc->sz || (uint)i==0)
     return -1;
   *pp = (char*)i;
+ //cprintf("\n4. addr: %d\n\n",*pp);
   return 0;
 }
 
